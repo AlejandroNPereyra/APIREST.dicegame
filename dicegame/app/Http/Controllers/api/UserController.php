@@ -97,4 +97,20 @@ class UserController extends Controller
 
     }
 
+        public function logout () {
+
+        /** @var \App\Models\User $user **/
+        $user = Auth::user();
+
+        $token = $user->token();
+        $token->revoke();
+
+        return response()->json([
+
+            'message' => 'User Logged out'
+
+        ], 200);
+
+    }
+
 }
