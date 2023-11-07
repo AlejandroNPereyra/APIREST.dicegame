@@ -33,17 +33,13 @@ class UserController extends Controller
         // If alias is empty, set it to "anonymous"
         $alias = $request->input('alias') ?: 'anonymous';
 
-        // Check if the alias already exists
+        // Check if the alias "anonymous" is already in use
+        if (User::where('alias', 'anonymous')->count() > 0) {
 
-        // $originalAlias = $alias;
-        // $counter = 1;
-
-        // while (User::where('alias', $alias)->exists()) {
-
-        //     $counter++;
-        //     $alias = $originalAlias . $counter;
-
-        // }
+            $uniqueId = User::where('alias', 'anonymous')->max('id') + 1;
+            $alias = "anonymous{$uniqueId}";
+            
+        }
 
         // Create a new user
         $user = User::create([
