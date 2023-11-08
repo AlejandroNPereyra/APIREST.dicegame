@@ -251,6 +251,15 @@ class UserController extends Controller
         });
 
         return response()->json(['users' => $users]);
+       
+    }
+
+    public function highestRank () {
+
+        $response = $this->rankingIndex();
+        $users = json_decode($response->content(), true)['users'];
+        $highestRankingGamer = $users[0];
+        return response()->json(['luckiest_gamer' => $highestRankingGamer]);
 
     }
 
