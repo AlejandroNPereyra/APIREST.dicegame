@@ -150,7 +150,7 @@ class UserController extends Controller
 
     }
 
-    public function gamersIndex () {
+    /* public function gamersIndex () {
 
         // The whereHas method add customized constraints to a relationship query
         $users = User::whereHas('roles', function ($query) {
@@ -175,15 +175,83 @@ class UserController extends Controller
                 // the success percentage is set to 0 to avoid division by zero.
         })
         
-        /*->map(function ($user) {
+        ->map(function ($user) {
             return [
                 'alias' => $user->alias,
                 'email' => $user->email,
                 'success_percentage' => $user->success_percentage
             ];
-        })*/;
+        });
 
         return response()->json(['users' => $users]);
+    } */ 
+
+    private function getUsersWithSuccessPercentage() {
+
+        return User::whereHas('roles', function ($query) {
+
+            $query->where('name', 'gamer');
+
+        })
+
+        ->withCount(['games as games_played'])
+        ->withCount(['games as games_won' => function ($query) {
+
+            $query->where('result', 7);
+
+        }])
+
+        ->get()
+        ->each(function ($user) {
+
+            $user->success_percentage = ($user->games_played > 0) 
+                ? round(($user->games_won / $user->games_played) * 100, 1)
+                : 0;
+
+        });
+
+    }
+
+    public function gamersIndex () {
+
+        $users = $this->getUsersWithSuccessPercentage()
+
+        ->map(function ($user) {
+
+            return [
+
+                'alias' => $user->alias,
+                'email' => $user->email,
+                'success_percentage' => $user->success_percentage
+
+            ];
+
+        });
+    
+        return response()->json(['users' => $users]);
+
+    }
+
+        public function rankingIndex () {
+
+        $users = $this->getUsersWithSuccessPercentage()
+
+        ->sortByDesc('success_percentage')
+        ->values()
+        ->map(function ($user, $index) {
+
+            return [
+
+                'rank' => $index + 1,
+                'alias' => $user->alias,
+                'success_percentage' => $user->success_percentage
+
+            ];
+
+        });
+
+        return response()->json(['users' => $users]);
+
     }
 
 }
