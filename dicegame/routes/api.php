@@ -19,4 +19,16 @@ Route::post('/login', [UserController::class, 'login']);
 Route::post('/logout', [UserController::class, 'logout'])->middleware('auth:api');
 Route::post('/players', [UserController::class, 'register']);
 
-Route::post('/players/{id}', [UserController::class, 'updateAlias'])->middleware('auth:api');
+Route::middleware('auth:api')->group(function() {
+
+    Route::middleware('role:gamer')->group(function() {
+
+        Route::put('/players/{id}', [UserController::class, 'updateAlias']);
+
+    });
+
+    Route::middleware('role:admin')->group(function() {
+
+    });
+
+});
