@@ -43,4 +43,14 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function games() {
+
+        // defines a hasMany relationship to the Game model
+        // Laravel will return a collection of Game model instances 
+        // that are related to the User model instance
+        return $this->hasMany(Game::class);
+
+    }
+    
 }

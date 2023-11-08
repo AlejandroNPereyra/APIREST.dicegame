@@ -29,6 +29,8 @@ Route::middleware('auth:api')->group(function() {
 
     Route::middleware('role:admin')->group(function() {
 
+        Route::get('/players', [UserController::class, 'gamersIndex']);
+
     });
 
 });
