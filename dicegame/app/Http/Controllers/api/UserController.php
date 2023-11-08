@@ -263,4 +263,13 @@ class UserController extends Controller
 
     }
 
+    public function lowestRank () {
+
+        $response = $this->rankingIndex();
+        $users = json_decode($response->content(), true)['users'];
+        $lowestRankingGamer = end($users);
+        return response()->json(['lowest_ranking_gamer' => $lowestRankingGamer]);
+
+    }
+
 }
