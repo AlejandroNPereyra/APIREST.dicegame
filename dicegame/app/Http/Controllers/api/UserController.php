@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
+    
     public function register (Request $request) {
 
         // Validation rules
@@ -106,6 +107,46 @@ class UserController extends Controller
             'message' => 'User Logged out'
 
         ], 200);
+
+    }
+
+    public function updateAlias (Request $request) {
+
+        // Validation rules
+        $validator = Validator::make($request->all(), [
+
+            'id' => 'required|integer',
+            'new_alias' => 'required|string|max:255',
+
+        ]);
+    
+        if ($validator->fails()) {
+
+            return response()->json(['error' => $validator->errors()], 422);
+
+        }
+    
+        // Find the user
+        $user = User::find($request->id);
+
+        // Check if the user has the 'gamer' role
+        if (!$user->hasRole('gamer')) {
+
+            return response()->json(['message' => 'Unauthorized'], 403);
+
+        }
+    
+        if (!$user) {
+
+            return response()->json(['message' => 'User not found'], 404);
+
+        }
+    
+        // Update the alias
+        $user->alias = $request->new_alias;
+        $user->save();
+    
+        return response()->json(['message' => 'Alias updated successfully']);
 
     }
 

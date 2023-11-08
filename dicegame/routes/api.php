@@ -18,3 +18,5 @@ use App\Http\Controllers\api\UserController;
 Route::post('/login', [UserController::class, 'login']);
 Route::post('/logout', [UserController::class, 'logout'])->middleware('auth:api');
 Route::post('/players', [UserController::class, 'register']);
+
+Route::post('/players/{id}', [UserController::class, 'updateAlias'])->middleware('auth:api');
