@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
 
         // You can also use the factory to create multiple gamers
         \App\Models\User::factory(9)->create();
-        \App\Models\Game::factory(100)->create();
+        \App\Models\Game::factory(500)->create();
 
     }
     

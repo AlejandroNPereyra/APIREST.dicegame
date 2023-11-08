@@ -150,4 +150,40 @@ class UserController extends Controller
 
     }
 
+    public function gamersIndex () {
+
+        // The whereHas method add customized constraints to a relationship query
+        $users = User::whereHas('roles', function ($query) {
+
+            $query->where('name', 'gamer'); // checks if a user has a role where the name is 'gamer'
+
+        })
+        
+        ->withCount(['games as games_played']) // adds a games_played attribute to each User model instance
+        ->withCount(['games as games_won' => function ($query) { // adds a games_won attribute
+            $query->where('result', 7);
+
+        }])
+
+        ->get()
+        ->each(function ($user) {
+            $user->success_percentage = ($user->games_played > 0) 
+                ? round(($user->games_won / $user->games_played) * 100, 1)
+                : 0; // calculates the success percentage for each user and adds it 
+                // as a success_percentage attribute to the User model instance.
+                //  If the user hasn't played any games (i.e., games_played is 0), 
+                // the success percentage is set to 0 to avoid division by zero.
+        })
+        
+        /*->map(function ($user) {
+            return [
+                'alias' => $user->alias,
+                'email' => $user->email,
+                'success_percentage' => $user->success_percentage
+            ];
+        })*/;
+
+        return response()->json(['users' => $users]);
+    }
+
 }
