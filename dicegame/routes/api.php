@@ -31,6 +31,7 @@ Route::middleware('auth:api')->group(function() {
 
         Route::get('/players', [UserController::class, 'gamersIndex']);
         Route::get('players/ranking', [UserController::class, 'rankingIndex']);
+        Route::get('players/ranking/winner', [UserController::class, 'highestRank']);
 
     });
 
