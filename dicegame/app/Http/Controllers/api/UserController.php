@@ -258,8 +258,8 @@ class UserController extends Controller
 
         $response = $this->rankingIndex();
         $users = json_decode($response->content(), true)['users'];
-        $highestRankingGamer = $users[0];
-        return response()->json(['luckiest_gamer' => $highestRankingGamer]);
+        $highestRankGamer = $users[0];
+        return response()->json(['luckiest_gamer' => $highestRankGamer]);
 
     }
 
@@ -267,8 +267,8 @@ class UserController extends Controller
 
         $response = $this->rankingIndex();
         $users = json_decode($response->content(), true)['users'];
-        $lowestRankingGamer = end($users);
-        return response()->json(['lowest_ranking_gamer' => $lowestRankingGamer]);
+        $lowestRankGamer = end($users);
+        return response()->json(['lowest_rank_gamer' => $lowestRankGamer]);
 
     }
 
