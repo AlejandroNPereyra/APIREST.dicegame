@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\api\GameController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\api\UserController;
@@ -23,7 +24,9 @@ Route::middleware('auth:api')->group(function() {
 
     Route::middleware('role:gamer')->group(function() {
 
+        Route::get('/players/{id}/games', [GameController::class, 'gamesIndex']);
         Route::put('/players/{id}', [UserController::class, 'updateAlias']);
+        
 
     });
 
