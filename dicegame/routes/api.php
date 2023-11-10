@@ -27,7 +27,7 @@ Route::middleware('auth:api')->group(function() {
         Route::put('/players/{id}', [UserController::class, 'updateAlias']);
         Route::get('/players/{id}/games', [GameController::class, 'gamesIndex']);
         Route::post('/players/{id}/games', [GameController::class, 'gamePlay']);
-
+        Route::delete('/players/{id}/games', [GameController::class, 'deleteGames']);
 
     });
 

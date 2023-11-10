@@ -90,11 +90,11 @@ class UserController extends Controller
 
         $token = $user->createToken('Personal Access Token')->accessToken;
 
-        return response()->json(['token' => $token]);
+        return response()->json(['Alias' => $user->alias, 'token' => $token]);
 
     }
 
-        public function logout () {
+    public function logout () {
 
         /** @var \App\Models\User $user **/
         $user = Auth::user();
@@ -104,7 +104,7 @@ class UserController extends Controller
 
         return response()->json([
 
-            'message' => 'User Logged out'
+            'message' => 'User Logged out successfully'
 
         ], 200);
 
@@ -125,7 +125,7 @@ class UserController extends Controller
 
         }
 
-        // Authenticate the user using the token provided in the request's Authorization header
+        // Authenticate the user
         $user = Auth::guard('api')->user();
 
         // Update the alias
@@ -136,6 +136,9 @@ class UserController extends Controller
     }
 
     private function getUsersWithSuccessPercentage() {
+
+        // Authenticate the user
+        Auth::guard('api')->user(); 
 
         return User::whereHas('roles', function ($query) {
 
@@ -161,10 +164,7 @@ class UserController extends Controller
 
     }
 
-    public function gamersIndex () {
-
-        // Authenticate the user using the token provided in the request's Authorization header
-        Auth::guard('api')->user();        
+    public function gamersIndex () {       
 
         $users = $this->getUsersWithSuccessPercentage()
 
@@ -188,9 +188,6 @@ class UserController extends Controller
     }
 
         public function rankingIndex () {
-
-        // Authenticate the user using the token provided in the request's Authorization header
-        Auth::guard('api')->user(); 
 
         $users = $this->getUsersWithSuccessPercentage()
 
