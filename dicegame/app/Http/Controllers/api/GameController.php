@@ -18,7 +18,7 @@ class GameController extends Controller
 
     public function gamesIndex ($id) {
 
-        // Authenticate the user using the token provided in the request's Authorization header
+        // Authenticate the user
         $user = Auth::guard('api')->user();
 
         // Fetch all games played by the user
@@ -51,10 +51,9 @@ class GameController extends Controller
         
     }
 
-
     public function gamePlay ($id) {
 
-        // Authenticate the user using the token provided in the request's Authorization header
+        // Authenticate the user
         $user = Auth::guard('api')->user();
 
         // Generate two random dice rolls
@@ -86,7 +85,26 @@ class GameController extends Controller
         ]);
 
      
-        return response()->json(['message' => 'Game added successfully', 'game' => $game]);
+        return response()->json(['message' => 'Game registered successfully', 'game' => $game]);
+
+    }
+
+    public function deleteGames ($id) {
+
+        // Authenticate the user
+        $user = Auth::guard('api')->user();
+    
+        // Fetch all games played by the user
+        $games = Game::where('user_id', $id)->get();
+    
+        // Delete the games
+        foreach ($games as $game) {
+
+            $game->delete();
+
+        }
+    
+        return response()->json(['message' => 'All '.$user->alias.' games deleted successfully']);
 
     }
 
