@@ -114,8 +114,7 @@ class UserController extends Controller
 
         // Validation rules
         $validator = Validator::make($request->all(), [
-
-            'id' => 'required|integer',
+            
             'new_alias' => 'required|string|max:255',
 
         ]);
@@ -125,66 +124,16 @@ class UserController extends Controller
             return response()->json(['error' => $validator->errors()], 422);
 
         }
-    
-        // Find the user
-        $user = User::find($request->id);
 
-        // Check if the user has the 'gamer' role
-        if (!$user->hasRole('gamer')) {
-
-            return response()->json(['message' => 'Unauthorized'], 403);
-
-        }
-    
-        if (!$user) {
-
-            return response()->json(['message' => 'User not found'], 404);
-
-        }
+        // Authenticate the user using the token provided in the request's Authorization header
+        $user = Auth::guard('api')->user();
     
         // Update the alias
-        $user->alias = $request->new_alias;
-        $user->save();
+        $user->update(['alias' => $request->new_alias]);
     
         return response()->json(['message' => 'Alias updated successfully']);
 
     }
-
-    /* public function gamersIndex () {
-
-        // The whereHas method add customized constraints to a relationship query
-        $users = User::whereHas('roles', function ($query) {
-
-            $query->where('name', 'gamer'); // checks if a user has a role where the name is 'gamer'
-
-        })
-        
-        ->withCount(['games as games_played']) // adds a games_played attribute to each User model instance
-        ->withCount(['games as games_won' => function ($query) { // adds a games_won attribute
-            $query->where('result', 7);
-
-        }])
-
-        ->get()
-        ->each(function ($user) {
-            $user->success_percentage = ($user->games_played > 0) 
-                ? round(($user->games_won / $user->games_played) * 100, 1)
-                : 0; // calculates the success percentage for each user and adds it 
-                // as a success_percentage attribute to the User model instance.
-                //  If the user hasn't played any games (i.e., games_played is 0), 
-                // the success percentage is set to 0 to avoid division by zero.
-        })
-        
-        ->map(function ($user) {
-            return [
-                'alias' => $user->alias,
-                'email' => $user->email,
-                'success_percentage' => $user->success_percentage
-            ];
-        });
-
-        return response()->json(['users' => $users]);
-    } */ 
 
     private function getUsersWithSuccessPercentage() {
 
@@ -214,6 +163,9 @@ class UserController extends Controller
 
     public function gamersIndex () {
 
+        // Authenticate the user using the token provided in the request's Authorization header
+        Auth::guard('api')->user();        
+
         $users = $this->getUsersWithSuccessPercentage()
 
         ->map(function ($user) {
@@ -227,12 +179,18 @@ class UserController extends Controller
             ];
 
         });
+
+        // Calculate the total success percentage of all registered gamers
+        $totalSuccessPercentage = $users->avg('success_percentage');
     
-        return response()->json(['users' => $users]);
+        return response()->json(['Total (All Gamers) Success Percentage' => round($totalSuccessPercentage, 1), 'Gamers' => $users]);
 
     }
 
         public function rankingIndex () {
+
+        // Authenticate the user using the token provided in the request's Authorization header
+        Auth::guard('api')->user(); 
 
         $users = $this->getUsersWithSuccessPercentage()
 
@@ -250,14 +208,14 @@ class UserController extends Controller
 
         });
 
-        return response()->json(['users' => $users]);
+        return response()->json(['Gamers Ranking' => $users]);
        
     }
 
     public function highestRank () {
 
         $response = $this->rankingIndex();
-        $users = json_decode($response->content(), true)['users'];
+        $users = json_decode($response->content(), true)['Gamers Ranking'];
         $highestRankGamer = $users[0];
         return response()->json(['luckiest_gamer' => $highestRankGamer]);
 
@@ -266,7 +224,7 @@ class UserController extends Controller
     public function lowestRank () {
 
         $response = $this->rankingIndex();
-        $users = json_decode($response->content(), true)['users'];
+        $users = json_decode($response->content(), true)['Gamers Ranking'];
         $lowestRankGamer = end($users);
         return response()->json(['lowest_rank_gamer' => $lowestRankGamer]);
 

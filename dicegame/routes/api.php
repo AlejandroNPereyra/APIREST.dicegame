@@ -24,9 +24,10 @@ Route::middleware('auth:api')->group(function() {
 
     Route::middleware('role:gamer')->group(function() {
 
-        Route::get('/players/{id}/games', [GameController::class, 'gamesIndex']);
         Route::put('/players/{id}', [UserController::class, 'updateAlias']);
-        
+        Route::get('/players/{id}/games', [GameController::class, 'gamesIndex']);
+        Route::post('/players/{id}/games', [GameController::class, 'gamePlay']);
+
 
     });
 
