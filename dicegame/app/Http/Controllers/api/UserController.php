@@ -127,9 +127,9 @@ class UserController extends Controller
 
         // Authenticate the user using the token provided in the request's Authorization header
         $user = Auth::guard('api')->user();
-    
+
         // Update the alias
-        $user->update(['alias' => $request->new_alias]);
+        User::where('id', $user->id)->update(['alias' => $request->new_alias]);
     
         return response()->json(['message' => 'Alias updated successfully']);
 
