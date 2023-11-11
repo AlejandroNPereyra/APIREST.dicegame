@@ -99,8 +99,11 @@ class UserController extends Controller
         /** @var \App\Models\User $user **/
         $user = Auth::user();
 
-        $token = $user->token();
-        $token->revoke();
+        if ($user->token()) {
+
+            $user->token()->revoke();
+
+        }
 
         return response()->json([
 
