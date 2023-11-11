@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -19,7 +18,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'alias',
         'email',
         'password',
     ];
@@ -43,4 +42,14 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function games() {
+
+        // defines a hasMany relationship to the Game model
+        // Laravel will return a collection of Game model instances 
+        // that are related to the User model instance
+        return $this->hasMany(Game::class);
+
+    }
+    
 }

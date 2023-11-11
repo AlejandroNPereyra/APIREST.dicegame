@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\api\GameController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\api\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +16,28 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::post('/login', [UserController::class, 'login']);
+Route::post('/logout', [UserController::class, 'logout'])->middleware('auth:api');
+Route::post('/players', [UserController::class, 'register']);
+
+Route::middleware('auth:api')->group(function() {
+
+    Route::middleware('role:gamer')->group(function() {
+
+        Route::put('/players/{id}', [UserController::class, 'updateAlias']);
+        Route::get('/players/{id}/games', [GameController::class, 'gamesIndex']);
+        Route::post('/players/{id}/games', [GameController::class, 'gamePlay']);
+        Route::delete('/players/{id}/games', [GameController::class, 'deleteGames']);
+
+    });
+
+    Route::middleware('role:admin')->group(function() {
+
+        Route::get('/players', [UserController::class, 'gamersIndex']);
+        Route::get('players/ranking', [UserController::class, 'rankingIndex']);
+        Route::get('players/ranking/winner', [UserController::class, 'highestRank']);
+        Route::get('players/ranking/loser', [UserController::class, 'lowestRank']);
+
+    });
+
 });
