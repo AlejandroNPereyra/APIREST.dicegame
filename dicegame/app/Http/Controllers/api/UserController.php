@@ -20,17 +20,13 @@ class UserController extends Controller
 
         // Validation rules
         $validator = Validator::make($request->all(), [
-
             'alias' => 'nullable|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => ['required', 'string', 'min:8', Password::min(8)->mixedCase()->letters()->numbers()->symbols()],
-
         ]);
 
         if ($validator->fails()) {
-
             return response()->json(['error' => $validator->errors()], 422);
-
         }
 
         // If alias is empty, set it to "anonymous"
@@ -38,19 +34,19 @@ class UserController extends Controller
 
         // Check if the alias "anonymous" is already in use
         if (User::where('alias', 'anonymous')->count() > 0) {
-
             $uniqueId = User::where('alias', 'anonymous')->max('id') + 1;
             $alias = "anonymous{$uniqueId}";
-            
+        }
+
+        if (User::where('alias', $alias)->exists()) {
+            return response()->json(['error' => 'Alias already exists'], 422);
         }
 
         // Create a new user
         $user = User::create([
-
             'alias' => $alias,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-
         ]);
 
         // Assign the 'gamer' role to the user
