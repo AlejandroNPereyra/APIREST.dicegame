@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\User;
 use Illuminate\Support\Facades\Artisan;
@@ -10,7 +11,7 @@ use Illuminate\Support\Facades\Hash;
 
 class UserControllerTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, WithFaker;
 
     public function setUp (): void {
 
@@ -25,9 +26,9 @@ class UserControllerTest extends TestCase
 
         // Arrange
         $userData = [
-            'alias' => 'testuser',
-            'email' => 'testuser@example.com',
-            'password' => 'password',
+            'alias' => $this->faker->userName,
+            'email' => $this->faker->unique()->safeEmail,
+            'password' => 'usereP@ss123',
         ];
 
         // Act
@@ -43,10 +44,10 @@ class UserControllerTest extends TestCase
 
         // Arrange
         $user = User::factory()->create([
-            'password' => Hash::make('password'),
+            'password' => Hash::make('gamerP@ss123'),
         ]);
 
-        $credentials = ['email' => $user->email, 'password' => 'password'];
+        $credentials = ['email' => $user->email, 'password' => 'gamerP@ss123'];
 
         // Act
         $response = $this->postJson('/api/login', $credentials);
@@ -157,6 +158,70 @@ class UserControllerTest extends TestCase
         $response->assertStatus(200);
         $response->assertJsonStructure(['lowest_rank_gamer']);
 
+    }
+
+    public function testUserHasGamerRole() {
+
+        // Create a user
+        $user = User::factory()->create();
+       
+        // Assign the gamer role to the user
+        $user->assignRole('gamer');
+       
+        // Assert that the user has the gamer role
+        $this->assertTrue($user->hasRole('gamer'));
+       
+    }
+
+    public function testUserHasAdminRole() {
+
+        // Create an admin user
+        $admin = User::create([
+            'alias' => 'Admin User',
+            'email' => 'admin@example.com',
+            'password' => bcrypt('adminP@ss123'),
+        ]);
+
+        $admin->assignRole('admin');
+       
+        // Assert that the user does not have the gamer role
+        $this->assertTrue($admin->hasRole('admin'));
+       
+    }
+
+    public function testGamerRoleCannotAccessAdminMethod() {
+
+        // Create a user
+        $user = User::factory()->create();
+       
+        // Assign the gamer role to the user
+        $user->assignRole('gamer');
+       
+        // Act
+        $response = $this->actingAs($user, 'api')->getJson("/api/players/ranking");
+       
+        // Assert
+        $response->assertStatus(403);
+       
+    }
+
+    public function testAdminRoleCannotAccessGamerMethod() {
+
+        // Create an admin user
+        $admin = User::create([
+            'alias' => 'Admin User',
+            'email' => 'admin@example.com',
+            'password' => bcrypt('adminP@ss123'),
+        ]);
+
+        $admin->assignRole('admin');
+       
+        // Act
+        $response = $this->actingAs($admin, 'api')->getJson("/api/players/{$admin->id}/games");
+       
+        // Assert
+        $response->assertStatus(403);
+       
     }
     
 }
