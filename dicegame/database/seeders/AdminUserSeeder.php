@@ -18,7 +18,7 @@ class AdminUserSeeder extends Seeder
 
             'alias' => 'Admin User',
             'email' => 'admin@example.com',
-            'password' => bcrypt('adminpass'), // Replace 'password' with the admin's password
+            'password' => bcrypt('adminP@ss123'), // Replace 'password' with the admin's password
 
         ]);
 
