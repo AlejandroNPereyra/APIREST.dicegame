@@ -89,4 +89,76 @@ class GameControllerTest extends TestCase
         
     }
 
+    public function testGamesIndexWithNonAuthenticatedUser() {
+
+        // Create a user
+        $user = User::factory()->create();
+      
+        // Act
+        $response = $this->getJson("/api/players/{$user->id}/games");
+      
+        // Assert
+        $response->assertStatus(401);
+      
+    }
+
+    public function testGamePlayWithNonAuthenticatedUser() {
+
+        // Create a user
+        $user = User::factory()->create();
+      
+        // Act
+        $response = $this->postJson("/api/players/{$user->id}/games");
+      
+        // Assert
+        $response->assertStatus(401);
+      
+    }
+
+    public function testDeleteGamesWithNonAuthenticatedUser() {
+
+        // Create a user
+        $user = User::factory()->create();
+      
+        // Act
+        $response = $this->deleteJson("/api/players/{$user->id}/games");
+      
+        // Assert
+        $response->assertStatus(401);
+      
+    }
+
+    public function testGamesIndexWithNonExistentUser() {
+
+        // Create a user
+        $user = User::factory()->create();
+
+        // Delete the user
+        $user->delete();
+
+
+        // Act
+        $response = $this->getJson("/api/players/{$user->id}/games");
+       
+        // Assert
+        $response->assertStatus(401);
+       
+       }
+
+    public function testGamePlayWithNonExistentUser() {
+
+        // Create a user
+        $user = User::factory()->create();
+
+        // Delete the user
+        $user->delete();
+
+        // Act
+        $response = $this->postJson("/api/players/{$user->id}/games");
+       
+        // Assert
+        $response->assertStatus(401);
+       
+    }
+       
 }

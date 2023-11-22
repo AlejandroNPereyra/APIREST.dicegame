@@ -159,5 +159,69 @@ class UserControllerTest extends TestCase
         $response->assertJsonStructure(['lowest_rank_gamer']);
 
     }
+
+    public function testUserHasGamerRole() {
+
+        // Create a user
+        $user = User::factory()->create();
+       
+        // Assign the gamer role to the user
+        $user->assignRole('gamer');
+       
+        // Assert that the user has the gamer role
+        $this->assertTrue($user->hasRole('gamer'));
+       
+    }
+
+    public function testUserHasAdminRole() {
+
+        // Create an admin user
+        $admin = User::create([
+            'alias' => 'Admin User',
+            'email' => 'admin@example.com',
+            'password' => bcrypt('adminP@ss123'),
+        ]);
+
+        $admin->assignRole('admin');
+       
+        // Assert that the user does not have the gamer role
+        $this->assertTrue($admin->hasRole('admin'));
+       
+    }
+
+    public function testGamerRoleCannotAccessAdminMethod() {
+
+        // Create a user
+        $user = User::factory()->create();
+       
+        // Assign the gamer role to the user
+        $user->assignRole('gamer');
+       
+        // Act
+        $response = $this->actingAs($user, 'api')->getJson("/api/players/ranking");
+       
+        // Assert
+        $response->assertStatus(403);
+       
+    }
+
+    public function testAdminRoleCannotAccessGamerMethod() {
+
+        // Create an admin user
+        $admin = User::create([
+            'alias' => 'Admin User',
+            'email' => 'admin@example.com',
+            'password' => bcrypt('adminP@ss123'),
+        ]);
+
+        $admin->assignRole('admin');
+       
+        // Act
+        $response = $this->actingAs($admin, 'api')->getJson("/api/players/{$admin->id}/games");
+       
+        // Assert
+        $response->assertStatus(403);
+       
+    }
     
 }
