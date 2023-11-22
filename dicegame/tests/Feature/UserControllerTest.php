@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\User;
 use Illuminate\Support\Facades\Artisan;
@@ -10,7 +11,7 @@ use Illuminate\Support\Facades\Hash;
 
 class UserControllerTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, WithFaker;
 
     public function setUp (): void {
 
@@ -25,9 +26,9 @@ class UserControllerTest extends TestCase
 
         // Arrange
         $userData = [
-            'alias' => 'testuser',
-            'email' => 'testuser@example.com',
-            'password' => 'password',
+            'alias' => $this->faker->userName,
+            'email' => $this->faker->unique()->safeEmail,
+            'password' => 'usereP@ss123',
         ];
 
         // Act
@@ -43,10 +44,10 @@ class UserControllerTest extends TestCase
 
         // Arrange
         $user = User::factory()->create([
-            'password' => Hash::make('password'),
+            'password' => Hash::make('gamerP@ss123'),
         ]);
 
-        $credentials = ['email' => $user->email, 'password' => 'password'];
+        $credentials = ['email' => $user->email, 'password' => 'gamerP@ss123'];
 
         // Act
         $response = $this->postJson('/api/login', $credentials);
