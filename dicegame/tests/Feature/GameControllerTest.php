@@ -37,11 +37,9 @@ class GameControllerTest extends TestCase
         // Assert
         $response->assertStatus(200);
         $response->assertJsonStructure([
-
             'Alias',
             'Success Percentage',
             'Games Index'
-
         ]);
 
     }
@@ -60,13 +58,11 @@ class GameControllerTest extends TestCase
         // Assert
         $response->assertStatus(200);
         $response->assertJsonStructure([
-
             'Message',
             'Alias',
             'Dice_A',
             'Dice_B',
             'Outcome'
-
         ]);
 
     }
@@ -88,10 +84,9 @@ class GameControllerTest extends TestCase
         // Assert
         $response->assertStatus(200);
         $response->assertJson([
-
                 'message' => "All {$user->alias} games deleted successfully"
-                
         ]);
+        
     }
 
 }

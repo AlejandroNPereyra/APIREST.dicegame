@@ -12,15 +12,12 @@ class RolesSeeder extends Seeder
      */
 
     public function run(): void
-
     {
-
         // Create an admin role
         Role::create(['name' => 'admin']);
 
         // Create a gamer role
         Role::create(['name' => 'gamer']);
-
     }
 
 }

@@ -23,7 +23,6 @@ Route::post('/players', [UserController::class, 'register']);
 Route::middleware('auth:api')->group(function() {
 
     Route::middleware('role:gamer')->group(function() {
-
         Route::put('/players/{id}', [UserController::class, 'updateAlias']);
         Route::get('/players/{id}/games', [GameController::class, 'gamesIndex']);
         Route::post('/players/{id}/games', [GameController::class, 'gamePlay']);
@@ -32,12 +31,10 @@ Route::middleware('auth:api')->group(function() {
     });
 
     Route::middleware('role:admin')->group(function() {
-
         Route::get('/players', [UserController::class, 'gamersIndex']);
         Route::get('players/ranking', [UserController::class, 'rankingIndex']);
         Route::get('players/ranking/winner', [UserController::class, 'highestRank']);
         Route::get('players/ranking/loser', [UserController::class, 'lowestRank']);
-
     });
-
+    
 });

@@ -16,15 +16,13 @@ class GameFactory extends Factory
      * @return array<string, mixed>
      */
     public function definition(): array {
-        
-        return [
 
+        return [
             'user_id' => User::role('gamer')->inRandomOrder()->first()->id,
             'dice_A' => $this->faker->numberBetween(1, 6),
             'dice_B' => $this->faker->numberBetween(1, 6),
-
         ];
-
+        
     }
 
 }

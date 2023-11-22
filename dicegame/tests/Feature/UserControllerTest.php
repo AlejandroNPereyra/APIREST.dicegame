@@ -25,11 +25,9 @@ class UserControllerTest extends TestCase
 
         // Arrange
         $userData = [
-
             'alias' => 'testuser',
             'email' => 'testuser@example.com',
             'password' => 'password',
-
         ];
 
         // Act
@@ -45,9 +43,7 @@ class UserControllerTest extends TestCase
 
         // Arrange
         $user = User::factory()->create([
-
             'password' => Hash::make('password'),
-
         ]);
 
         $credentials = ['email' => $user->email, 'password' => 'password'];

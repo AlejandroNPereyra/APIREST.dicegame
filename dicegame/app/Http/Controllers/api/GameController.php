@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Game;
 use Illuminate\Support\Facades\Auth;
 
-
 class GameController extends Controller
 {
 
@@ -55,7 +54,6 @@ class GameController extends Controller
             'dice_A' => $dice1,
             'dice_B' => $dice2,
         ]);
-
 
         // Check the sum of the dice rolls
         $sum = $dice1 + $dice2;
