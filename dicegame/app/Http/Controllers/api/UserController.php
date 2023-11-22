@@ -20,37 +20,23 @@ class UserController extends Controller
 
         // Validation rules
         $validator = Validator::make($request->all(), [
-
-            'alias' => 'nullable|string|max:255',
+            'alias' => 'nullable|string|max:255|unique:users,alias,' . $request->id,
             'email' => 'required|string|email|max:255|unique:users',
             'password' => ['required', 'string', 'min:8', Password::min(8)->mixedCase()->letters()->numbers()->symbols()],
-
         ]);
 
         if ($validator->fails()) {
-
             return response()->json(['error' => $validator->errors()], 422);
-
         }
 
         // If alias is empty, set it to "anonymous"
         $alias = $request->input('alias') ?: 'anonymous';
 
-        // Check if the alias "anonymous" is already in use
-        if (User::where('alias', 'anonymous')->count() > 0) {
-
-            $uniqueId = User::where('alias', 'anonymous')->max('id') + 1;
-            $alias = "anonymous{$uniqueId}";
-            
-        }
-
         // Create a new user
         $user = User::create([
-
             'alias' => $alias,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-
         ]);
 
         // Assign the 'gamer' role to the user
@@ -69,27 +55,21 @@ class UserController extends Controller
 
         // Validation rules
         $validator = Validator::make($request->all(), [
-
             'email' => 'required|string|email',
             'password' => ['required', 'string', 'min:8', Password::min(8)->mixedCase()->letters()->numbers()->symbols()],
-
         ]);
 
         if ($validator->fails()) {
-
             return response()->json(['error' => $validator->errors()], 422);
         }
 
         $credentials = $request->only('email', 'password');
 
         if (!Auth::attempt($credentials)) {
-
             return response()->json(['message' => 'Unauthorized'], 401);
-
         }
 
         $user = $request->user();
-
         $token = $user->createToken('Personal Access Token')->accessToken;
 
         return response()->json(['Alias' => $user->alias, 'token' => $token]);
@@ -102,15 +82,11 @@ class UserController extends Controller
         $user = Auth::user();
 
         if ($user->token()) {
-
             $user->token()->revoke();
-
         }
 
         return response()->json([
-
             'message' => 'User Logged out successfully'
-
         ], 200);
 
     }
@@ -119,22 +95,21 @@ class UserController extends Controller
 
         // Validation rules
         $validator = Validator::make($request->all(), [
-            
-            'new_alias' => 'required|string|max:255',
-
+            'new_alias' => 'nullable|string|max:255|unique:users,alias,' . $request->id,
         ]);
     
         if ($validator->fails()) {
-
             return response()->json(['error' => $validator->errors()], 422);
-
         }
 
         // Authenticate the user
         $user = Auth::guard('api')->user();
 
+        // If the new alias is null, set it to "anonymous"
+        $alias = $request->new_alias ?: 'anonymous';
+
         // Update the alias
-        User::where('id', $user->id)->update(['alias' => $request->new_alias]);
+        User::where('id', $user->id)->update(['alias' => $alias]);
     
         return response()->json(['message' => 'Alias updated successfully']);
 
