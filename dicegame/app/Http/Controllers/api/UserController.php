@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Validator;
 use Laravel\Passport\Passport;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rules\Password;
+
 
 class UserController extends Controller
 {
@@ -21,7 +23,7 @@ class UserController extends Controller
 
             'alias' => 'nullable|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
+            'password' => ['required', 'string', 'min:8', Password::min(8)->mixedCase()->letters()->numbers()->symbols()],
 
         ]);
 
@@ -69,7 +71,7 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
 
             'email' => 'required|string|email',
-            'password' => 'required|string',
+            'password' => ['required', 'string', 'min:8', Password::min(8)->mixedCase()->letters()->numbers()->symbols()],
 
         ]);
 
